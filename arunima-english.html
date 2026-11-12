@@ -1273,7 +1273,7 @@ section{position:relative}
       <div>
         <p class="eyebrow">Wednesday, 25 November 2026</p>
         <h3>Mandapam</h3>
-        <address>Near Birsa Hanuman Mandir, Rani Bagan, Joda Talab, Bariatu, Ranchi, Jharkhand</address>
+        <address>The Mandapam, Joda Talab Rd, Birla Bagan, Bariatu, Ranchi, Jharkhand 834009</address>
         <p class="welcome">We would be honoured to welcome you here as two families become one.</p>
         <div class="actions">
           <a class="btn" id="dirBtn" target="_blank" rel="noopener">
@@ -1283,7 +1283,7 @@ section{position:relative}
         </div>
       </div>
     </div>
-    <div class="map-card" data-lat="23.3972" data-lng="85.3573" data-zoom="15" data-q="Mandapam, near Birsa Hanuman Mandir, Rani Bagan, Joda Talab, Bariatu, Ranchi, Jharkhand" data-label="Mandapam" data-sub="Near Birsa Hanuman Mandir, Rani Bagan, Joda Talab, Bariatu">
+    <div class="map-card" data-lat="23.3972" data-lng="85.3573" data-zoom="15" data-q="The Mandapam, Joda Talab Rd, Birla Bagan, Bariatu, Ranchi, Jharkhand 834009" data-label="Mandapam" data-sub="Joda Talab Rd, Birla Bagan, Bariatu">
       <div class="map-frame">
         <div class="map-el" role="region" aria-label="Map of Bariatu, Ranchi"></div>
         <div class="map-off"><span class="map-off-pin"></span><p>Bariatu, Ranchi<br><small>Tap “Open in Google Maps” for the exact venue and live directions</small></p></div>
@@ -1358,7 +1358,7 @@ section{position:relative}
    e.g. '919876543210'. Leave empty to let guests pick a contact in WhatsApp. */
 const WHATSAPP_NUMBER = '';
 const WEDDING_TARGET = new Date('2026-11-25T00:00:00+05:30'); // Wedding day begins at midnight, Asia/Kolkata
-const VENUE = 'Mandapam, near Birsa Hanuman Mandir, Rani Bagan, Joda Talab, Bariatu, Ranchi, Jharkhand';
+const VENUE = 'The Mandapam, Joda Talab Rd, Birla Bagan, Bariatu, Ranchi, Jharkhand 834009';
 const EVENTS = [
   {name:'Tilak', day:'Friday', date:'20 November 2026', desc:'A traditional ceremony celebrating the forthcoming union of the families.', icon:'tilak'},
   {name:'Mata Ki Chowki', day:'Sunday', date:'22 November 2026', desc:'An evening of devotional prayers and blessings.', icon:'diya'},
@@ -1890,7 +1890,7 @@ function initMaps(){
   const cards=$$('.map-card');if(!cards.length)return;
   cards.forEach(card=>{
     if(card.dataset.ready)return;card.dataset.ready='1';
-    const q=card.dataset.q || 'Mandapam, near Birsa Hanuman Mandir, Rani Bagan, Joda Talab, Bariatu, Ranchi, Jharkhand';
+    const q=card.dataset.q || 'The Mandapam, Joda Talab Rd, Birla Bagan, Bariatu, Ranchi, Jharkhand 834009';
     const open=card.querySelector('.map-open');
     if(open){open.href=mapsSearch(q);open.target='_blank';open.rel='noopener noreferrer';}
     const art=card.querySelector('.map-off');
@@ -2711,11 +2711,8 @@ addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{
 },120)});
 if('ResizeObserver' in window){const ro=new ResizeObserver(()=>{safe(()=>$$('[data-arch]').forEach(drawShapeArch))});$$('[data-arch]').forEach(c=>ro.observe(c))}
 addEventListener('load',()=>safe(placeKnots));
-})();
 
-</script>
-
-<script>
+// music autoplay popup (kept inside the main scope so it can see musicOn, setMusic, weddingSong)
 (function(){
  const modal=document.getElementById('musicAutoplayModal');
  const play=document.getElementById('musicModalPlay');
@@ -2736,8 +2733,21 @@ addEventListener('load',()=>safe(placeKnots));
  if(open) open.addEventListener('click',()=>{if(!musicOn)setMusic(true);},{capture:true});
  if(btn) btn.addEventListener('click',()=>{if(musicOn && modal)modal.hidden=true;});
  // Attempt autoplay on load; browsers that block it get a clear, branded tap-to-play popup.
+ // Browsers only allow sound after a tap/click/key press, so start the song on the guest's first interaction anywhere.
+ const evs=['click','touchend','keydown'];
+ function cleanup(){evs.forEach(ev=>document.removeEventListener(ev,unlock,true));}
+ function unlock(e){
+   if(musicOn){cleanup();return;}
+   const t=e.target;
+   if(t && t.closest && (t.closest('#musicBtn')||t.closest('#musicModalPlay')||t.closest('#musicModalDismiss'))){cleanup();return;}
+   if(modal)modal.hidden=true;
+   setMusic(true);
+   if(musicOn)cleanup();
+ }
+ evs.forEach(ev=>document.addEventListener(ev,unlock,true));
  if(document.readyState==='complete')setTimeout(attemptAutoplay,350);
  else window.addEventListener('load',()=>setTimeout(attemptAutoplay,350),{once:true});
+})();
 })();
 </script>
 
